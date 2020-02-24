@@ -4,8 +4,10 @@ Plugin Name: Weldpay
 Description: Weldpay Payment Gateway for WooCommerce
 Author: Nicola Usai
 Author URI: https://www.upwork.com/freelancers/~0196ad45cb4b5bf7af
+Edited by: Alban Ndoja    
 */
-add_filter( 'woocommerce_payment_gateways', 'weldpay_add_gateway_class' );
+
+  add_filter( 'woocommerce_payment_gateways', 'weldpay_add_gateway_class' );
   function weldpay_add_gateway_class( $gateways ) {
   $gateways[] = 'WC_Weldpay_Gateway';
   return $gateways;
@@ -75,11 +77,13 @@ function weldpay_init_gateway_class() {
         $weldpay_item = array(
           'Name' => $item['name'],
           'Notes' => $item['quantity'],
-          'Amount' => $item['total']
-        );
+          'Amount' => $item['total'] + $item['total_tax'] + $item['shipping_total'] + $item['shipping_tax']
+		);
+  
         $weldpay_items[] = json_encode($weldpay_item);
       }
       $ch = curl_init();
+	  $shipping_tot = $order->get_total_shipping() + $order->get_shipping_tax();
       curl_setopt($ch, CURLOPT_URL, "https://payments.weldpay.it/api/1.0/gateway/generate-transaction");
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_HEADER, FALSE);
@@ -97,7 +101,7 @@ function weldpay_init_gateway_class() {
           {
             \"Name\": \"".$order->get_shipping_method()."\",
             \"Notes\": null,
-            \"Amount\": ".$order->get_total_shipping()."
+            \"Amount\": ".$shipping_tot."
           }
         ],
         \"SuccessUrl\": \"".$this->get_return_url( $order )."\",

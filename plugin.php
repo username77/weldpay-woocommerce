@@ -7,8 +7,8 @@ Author URI: https://www.upwork.com/freelancers/~0196ad45cb4b5bf7af
 Edited by: Alban Ndoja    
 */
 
-  add_filter( 'woocommerce_payment_gateways', 'weldpay_add_gateway_class' );
-  function weldpay_add_gateway_class( $gateways ) {
+add_filter( 'woocommerce_payment_gateways', 'weldpay_add_gateway_class' );
+function weldpay_add_gateway_class( $gateways ) {
   $gateways[] = 'WC_Weldpay_Gateway';
   return $gateways;
 }
